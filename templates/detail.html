@@ -20,6 +20,18 @@
         <img src="{{ shop.photo.pc.l }}" alt="店舗画像" width="300">
     {% endif %}
 
+<!--  Google Mapsのリンクを挿入 -->
+{% if shop.lat is defined and shop.lng is defined %}
+    <h2>地図で場所を確認</h2>
+    <p>
+        <a href="https://www.google.com/maps?q={{ shop.lat }},{{ shop.lng }}" target="_blank">
+            Googleマップで開く
+        </a>
+    </p>
+{% endif %}
+
+
+
     <!--  公式ページへのリンクを表示（新しいタブで開く） -->
     <p><a href="{{ shop.urls.pc }}" target="_blank">公式ページを見る</a></p>
 
