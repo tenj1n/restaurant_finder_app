@@ -2,45 +2,56 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <!-- タイトルに店舗名を表示 -->
-    <title>{{ shop.name }} の詳細</title>  
+    <title>{{ shop.name }} の詳細</title>
+    <!-- Bootstrapのスタイルシートを読み込む -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <!--  店舗名を大見出しとして表示 -->
-    <h1>{{ shop.name }}</h1>
+<body class="bg-dark text-white">
 
-    <!--  住所情報 -->
-    <p><strong>住所:</strong> {{ shop.address }}</p>
+    <div class="container mt-5">
+        <!-- 店舗情報をまとめて表示するカード -->
+        <div class="card mx-auto text-dark" style="max-width: 600px;">
+            
+            <!-- 店舗画像（あれば） -->
+            {% if shop.photo and shop.photo.pc %}
+                <img src="{{ shop.photo.pc.l }}" class="card-img-top" alt="店舗画像">
+            {% endif %}
 
-    <!--  営業時間（"open" キーに入ってる） -->
-    <p><strong>営業時間:</strong> {{ shop.open }}</p>
+            <div class="card-body">
+                <!-- 店舗名を大きく表示 -->
+                <h2 class="card-title">{{ shop.name }}</h2>
 
-    <!--  店舗画像が存在する場合のみ表示 -->
-    {% if shop.photo and shop.photo.pc %}
-        <img src="{{ shop.photo.pc.l }}" alt="店舗画像" width="300">
-    {% endif %}
+                <!-- 店舗の住所 -->
+                <p class="card-text"><strong>住所:</strong> {{ shop.address }}</p>
 
-<!--  Google Mapsのリンクを挿入 -->
-{% if shop.lat is defined and shop.lng is defined %}
-    <h2>地図で場所を確認</h2>
-    <p>
-        <a href="https://www.google.com/maps?q={{ shop.lat }},{{ shop.lng }}" target="_blank">
-            Googleマップで開く
-        </a>
-    </p>
-{% endif %}
+                <!-- 営業時間 -->
+                <p class="card-text"><strong>営業時間:</strong> {{ shop.open }}</p>
 
+                <!-- Googleマップリンク（緯度・経度がある場合のみ） -->
+                {% if shop.lat is defined and shop.lng is defined and shop.lat and shop.lng %}
+                    <p class="card-text">
+                        <strong>地図:</strong>
+                        <a href="https://www.google.com/maps?q={{ shop.lat }},{{ shop.lng }}" target="_blank">
+                            Googleマップで開く
+                        </a>
+                    </p>
+                {% endif %}
 
+                <!-- 電話番号（あれば） -->
+                {% if shop.tel %}
+                    <p class="card-text"><strong>電話番号:</strong>
+                        <a href="tel:{{ shop.tel }}">{{ shop.tel }}</a>
+                    </p>
+                {% endif %}
+            </div>
 
-    <!--  公式ページへのリンクを表示（新しいタブで開く） -->
-    <p><a href="{{ shop.urls.pc }}" target="_blank">公式ページを見る</a></p>
+            <!-- 下部に公式ページリンクと戻るボタン -->
+            <div class="card-footer bg-transparent border-0 d-flex justify-content-between">
+                <a href="{{ shop.urls.pc }}" target="_blank" class="btn btn-outline-primary">公式ページ</a>
+                <a href="/" class="btn btn-light">検索に戻る</a>
+            </div>
+        </div>
+    </div>
 
-    <!--  電話番号がある場合、クリックで発信できるリンクを表示 -->
-    {% if shop.tel %}
-        <p><a href="tel:{{ shop.tel }}">電話をかける</a></p>
-    {% endif %}
-
-    <!--  検索画面に戻るリンク -->
-    <p><a href="/">← 検索画面に戻る</a></p>
 </body>
 </html>

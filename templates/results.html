@@ -3,44 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <title>検索結果</title>
+    <!-- Bootstrapのスタイルシートを読み込む（CDN） -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>レストラン検索結果</h1>
+<!-- Bootstrapのダークモード風背景と文字色 -->
+<body class="bg-dark text-white">
 
-    <!--  店舗リストが存在する場合 -->
-    {% if shops %}
-        <ul>
-            <!--  取得した店舗一覧を1件ずつ表示 -->
-            {% for shop in shops %}
-                <li>
-                    <!-- 店舗名をクリックできるように表示 -->
-                    <h2>{{ shop.name }}
-                        <a href="{{url_for('detail',shop_id=shop.id)}}">{{shop.name}} </a>
-                    </h2>
+    <!-- ページ全体を中央寄せ・余白付きで表示 -->
+    <div class="container mt-5">
+        <!-- ページタイトル -->
+        <h1 class="mb-4 text-center">検索結果</h1>
 
-                    <!-- アクセス情報（例：駅から徒歩○分など） -->
-                    <p>{{ shop.access }}</p>
+        <!-- 検索結果（店舗）が存在する場合 -->
+        {% if shops %}
+            <!-- グリッドレイアウトでカードを複数列に並べる -->
+            <div class="row">
+                {% for shop in shops %}
+                    <!-- 中サイズで2列、大サイズで3列になる -->
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <!-- 店舗情報をカード形式で表示 -->
+                        <div class="card h-100 text-dark">
+                            
+                            <!-- 店舗の画像があれば表示 -->
+                            {% if shop.photo and shop.photo.pc %}
+                                <img src="{{ shop.photo.pc.l }}" class="card-img-top" alt="店舗画像">
+                            {% endif %}
 
-                    <!-- 店舗の画像があれば表示 -->
-                    {% if shop.photo and shop.photo.pc %}
-                        <img src="{{ shop.photo.pc.l }}" alt="店舗画像" width="200">
-                    {% endif %}
+                            <div class="card-body">
+                                <!-- 店舗名（クリックすると詳細ページへ） -->
+                                <h5 class="card-title">
+                                    <a href="{{ url_for('detail', shop_id=shop.id) }}" class="text-decoration-none text-dark">
+                                        {{ shop.name }}
+                                    </a>
+                                </h5>
 
-                    <!-- 店舗の公式ページへのリンク -->
-                    <p><a href="{{ shop.urls.pc }}" target="_blank">店舗ページを見る</a></p>
+                                <!-- アクセス情報（最寄り駅など） -->
+                                <p class="card-text">{{ shop.access }}</p>
+                            </div>
 
+                            <!-- 下部に公式ページリンクボタンを配置 -->
+                            <div class="card-footer bg-transparent border-0">
+                                <a href="{{ shop.urls.pc }}" target="_blank" class="btn btn-outline-primary w-100">
+                                    公式ページを見る
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
 
-                </li>
-                <hr> <!-- 各店舗の区切り線 -->
-            {% endfor %}
-        </ul>
+        <!-- 検索結果が1件もなかった場合 -->
+        {% else %}
+            <p class="text-center">該当する店舗が見つかりませんでした。</p>
+        {% endif %}
 
-    <!--  店舗が1件も見つからなかった場合 -->
-    {% else %}
-        <p>該当する店舗が見つかりませんでした。</p>
-    {% endif %}
-
-    <!--  検索画面へ戻るリンク -->
-    <p><a href="/">← 検索画面に戻る</a></p>
+        <!-- 検索画面に戻るボタン -->
+        <div class="text-center mt-4">
+            <a href="/" class="btn btn-light">検索画面に戻る</a>
+        </div>
+    </div>
 </body>
 </html>
