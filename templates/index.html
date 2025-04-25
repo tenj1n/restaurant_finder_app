@@ -57,7 +57,7 @@
   <div class="container py-5">
     <div class="card-style mx-auto" style="max-width: 720px;">
       <h1>レストラン検索</h1>
-      <form action="/search" method="post">
+      <form action="/search" method="get">
         <!-- 地方エリア・都道府県・市区 -->
         <div class="row mb-3">
           <div class="col-md-4">
@@ -124,6 +124,8 @@
         <div class="d-flex justify-content-center">
             <button type="submit" class="btn btn-danger btn-search">
             <i class="bi bi-search"></i> 検索する
+            </button>
+            <button type="button" class="btn btn-secondary btn-search" onclick="resetForm();">リセット
             </button>
         </div>
       </form>
@@ -219,8 +221,19 @@
         latInput.disabled = false;
         lngInput.disabled = false;
     }
-    </script>
-    
-
+    // リセットボタン用の関数
+    function resetForm() {
+        // フォームをリセット
+        document.querySelector('form').reset();
+        // セレクトボックスも初期化
+        document.getElementById("pref_area").innerHTML = '<option value="">選択してください</option>';
+        document.getElementById("middle_area").innerHTML = '<option value="">選択してください</option>';
+        // 緯度・経度も再取得して入力する
+        navigator.geolocation.getCurrentPosition(function (position) {
+            document.getElementById("lat").value = position.coords.latitude;
+            document.getElementById("lng").value = position.coords.longitude;
+        });
+    }
+</script>
 </body>
 </html>
