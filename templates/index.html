@@ -18,29 +18,45 @@
                 <div class="mb-3">
                     <label class="form-label">エリア選択（任意）</label>
                     <select name="large_area" class="form-select">
-                        <option value="">選択してください</option>
                         <option value="Z011">北海道</option>
-                        <option value="Z041">東北</option>
-                        <option value="Z081">北陸・甲信越</option>
-                        <option value="Z071">東海</option>
-                        <option value="Z091">関東</option>
-                        <option value="Z131">関西</option>
-                        <option value="Z151">中国</option>
-                        <option value="Z161">四国</option>
-                        <option value="Z151">九州・沖縄</option>
+                        <option value="Z021">東北</option>
+                        <option value="Z041">甲信越</option>
+                        <option value="Z051">北陸</option>
+                        <option value="Z061">東海</option>
+                        <option value="Z071">関西</option>
+                        <option value="Z081">中国</option>
+                        <option value="Z091">四国</option>
+                        <option value="Z101">九州</option>
+                        <option value="Z111">沖縄</option>
+                    </select>
+                </div>
+
+                <!-- 都道府県エリア（自動切替） -->
+                <div class="mb-3">
+                    <label class="form-label">都道府県</label>
+                    <select id="pref_area" name="pref_area" class="form-select">
+                        <option value="">選択してください</option>
+                    </select>
+                </div>
+
+                <!-- 市区町村エリア（自動切替） -->
+                <div class="mb-3">
+                    <label class="form-label">市区エリア</label>
+                    <select id="middle_area" name="middle_area" class="form-select">
+                        <option value="">選択してください</option>
                     </select>
                 </div>
 
                 <!-- 緯度の入力 -->
                 <div class="mb-3">
                     <label class="form-label">緯度</label>
-                    <input type="text" name="lat" id="lat" class="form-control" required>
+                    <input type="text" name="lat" id="lat" class="form-control">
                 </div>
 
                 <!-- 経度の入力 -->
                 <div class="mb-3">
                     <label class="form-label">経度</label>
-                    <input type="text" name="lng" id="lng" class="form-control" required>
+                    <input type="text" name="lng" id="lng" class="form-control">
                 </div>
 
                 <!-- 検索範囲の選択 -->
@@ -71,6 +87,58 @@
 
     <!-- 現在地の緯度・経度を自動入力する -->
     <script>
+        const areaData = {
+            "Z131": { // 関西
+            "大阪": [
+                { label: "梅田", value: "Y980" },
+                { label: "なんば", value: "Y981" }
+            ],
+            "京都": [
+                { label: "京都駅", value: "Y982" }
+            ]
+            },
+            "Z091": { // 関東
+            "東京": [
+                { label: "新宿", value: "Y005" },
+                { label: "渋谷", value: "Y006" },
+                { label: "池袋", value: "Y007" }
+            ]
+            }
+        };
+
+        const largeAreaSelect = document.getElementById("large_area");
+        const prefAreaSelect = document.getElementById("pref_area");
+        const middleAreaSelect = document.getElementById("middle_area");
+
+        largeAreaSelect.addEventListener("change", function () {
+            const selected = this.value;
+            prefAreaSelect.innerHTML = '<option value="">選択してください</option>';
+            middleAreaSelect.innerHTML = '<option value="">選択してください</option>';
+
+            if (areaData[selected]) {
+            Object.keys(areaData[selected]).forEach(pref => {
+                const option = document.createElement("option");
+                option.value = pref;
+                option.textContent = pref;
+                prefAreaSelect.appendChild(option);
+            });
+            }
+        });
+
+        prefAreaSelect.addEventListener("change", function () {
+            const large = largeAreaSelect.value;
+            const pref = this.value;
+            middleAreaSelect.innerHTML = '<option value="">選択してください</option>';
+
+            if (areaData[large] && areaData[large][pref]) {
+            areaData[large][pref].forEach(area => {
+                const option = document.createElement("option");
+                option.value = area.value;
+                option.textContent = area.label;
+                middleAreaSelect.appendChild(option);
+            });
+            }
+        });
         navigator.geolocation.getCurrentPosition(function(position) {
             document.getElementById("lat").value = position.coords.latitude;
             document.getElementById("lng").value = position.coords.longitude;

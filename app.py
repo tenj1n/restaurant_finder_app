@@ -25,7 +25,9 @@ def search():
     lng = request.form.get("lng")
     range_km = request.form.get("range")
     keyword = request.form.get("keyword", "")
-    large_area = request.form.get("large_area")  # 都道府県などのエリアコード
+    large_area = request.form.get("large_area")   # 大エリア(関西など)
+    pref_area = request.form.get("pref_area")     # 都道府県（大阪など）
+    middle_area = request.form.get("middle_area") # 市区(梅田など)
 
     # 共通パラメータ
     params = {
@@ -35,15 +37,19 @@ def search():
         "keyword": keyword
     }
 
+    # 市区が選択されている場合は、それを優先して検索 (大阪市、中央区など)
+    if middle_area:
+        params["middle_area"] = middle_area
+
+    # 緯度・経度がなければ大エリアで検索（例：関西、東北など）
+    elif large_area:
+        params["large_area"] = large_area
+
     # 緯度・経度が取得できている場合は位置情報で検索
-    if lat and lng:
+    elif lat and lng:
         params["lat"] = lat
         params["lng"] = lng
         params["range"] = range_km
-
-    # 緯度・経度がなければ都道府県エリアで検索（例：関西、東北など）
-    elif large_area:
-        params["large_area"] = large_area
 
     # APIリクエスト送信
     response = requests.get("https://webservice.recruit.co.jp/hotpepper/gourmet/v1/", params=params)
