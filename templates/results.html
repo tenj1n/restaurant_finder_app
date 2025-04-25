@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>検索結果</title>
+</head>
+<body>
+    <h1>レストラン検索結果</h1>
+
+    <!-- 🔽 店舗リストが存在する場合 -->
+    {% if shops %}
+        <ul>
+            <!-- 🔁 取得した店舗一覧を1件ずつ表示 -->
+            {% for shop in shops %}
+                <li>
+                    <!-- 店舗名 -->
+                    <h2>{{ shop.name }}</h2>
+
+                    <!-- アクセス情報（例：駅から徒歩○分など） -->
+                    <p>{{ shop.access }}</p>
+
+                    <!-- 店舗の画像があれば表示 -->
+                    {% if shop.photo and shop.photo.pc %}
+                        <img src="{{ shop.photo.pc.l }}" alt="店舗画像" width="200">
+                    {% endif %}
+
+                    <!-- 店舗の公式ページへのリンク -->
+                    <p><a href="{{ shop.urls.pc }}" target="_blank">店舗ページを見る</a></p>
+                </li>
+                <hr> <!-- 各店舗の区切り線 -->
+            {% endfor %}
+        </ul>
+
+    <!-- 🔽 店舗が1件も見つからなかった場合 -->
+    {% else %}
+        <p>該当する店舗が見つかりませんでした。</p>
+    {% endif %}
+
+    <!-- 🔙 検索画面へ戻るリンク -->
+    <p><a href="/">← 検索画面に戻る</a></p>
+</body>
+</html>

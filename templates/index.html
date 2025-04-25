@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>レストラン検索</title>
+</head>
+<body>
+    <h1>現在地でレストラン検索</h1>
+
+    <!--  レストラン検索フォーム -->
+    <form action="/search" method="post">
+        <!-- 緯度（JavaScriptで自動入力される） -->
+        <label>緯度: <input type="text" name="lat" id="lat" readonly></label><br>
+
+        <!-- 経度（JavaScriptで自動入力される） -->
+        <label>経度: <input type="text" name="lng" id="lng" readonly></label><br>
+
+        <!-- 検索半径の選択肢（1〜5で300m〜3000m） -->
+        <label>検索半径:
+            <select name="range">
+                <option value="1">300m</option>
+                <option value="2">500m</option>
+                <option value="3">1000m</option>
+                <option value="4">2000m</option>
+                <option value="5">3000m</option>
+            </select>
+        </label><br>
+
+        <!-- 任意のキーワード入力（例：ラーメン、カフェなど） -->
+        <label>キーワード: <input type="text" name="keyword"></label><br>
+
+        <!-- 検索ボタン -->
+        <button type="submit">検索する</button>
+    </form>
+
+    <!--  現在地を取得してフォームに自動入力する処理 -->
+    <script>
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                // 緯度と経度をフォームに自動入力
+                document.getElementById("lat").value = position.coords.latitude;
+                document.getElementById("lng").value = position.coords.longitude;
+            },
+            function(error) {
+                // 位置情報取得に失敗したときの処理
+                alert("位置情報を取得できませんでした");
+            }
+        );
+    </script>
+</body>
+</html>
