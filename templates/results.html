@@ -1,66 +1,127 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>検索結果</title>
-    <!-- Bootstrapのスタイルシートを読み込む（CDN） -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>検索結果</title>
+
+  <!-- Bootstrap＋Bootstrap Iconsの読み込み -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    /* 背景・フォント基本設定 */
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* レストランカードのスタイル */
+    .card-restaurant {
+      border: none;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      background: #fff;
+      transition: transform 0.2s;
+    }
+
+    /* カードをホバーしたときの浮き上がり効果 */
+    .card-restaurant:hover {
+      transform: translateY(-5px);
+    }
+
+    /* 店舗画像スタイル */
+    .restaurant-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    /* カード内部の情報部分 */
+    .restaurant-body {
+      padding: 1rem;
+    }
+
+    /* 店舗タイトルスタイル */
+    .restaurant-title {
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: #212529;
+    }
+
+    /* 店舗情報のテキストスタイル */
+    .restaurant-info {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    /* 詳細ボタンのスタイル */
+    .btn-detail {
+      background-color: #dc3545;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      margin-top: 0.5rem;
+      display: block;
+      width: 100%;
+      text-align: center;
+    }
+  </style>
 </head>
-<!-- Bootstrapのダークモード風背景と文字色 -->
-<body class="bg-dark text-white">
 
-    <!-- ページ全体を中央寄せ・余白付きで表示 -->
-    <div class="container mt-5">
-        <!-- ページタイトル -->
-        <h1 class="mb-4 text-center">検索結果</h1>
+<body>
 
-        <!-- 検索結果（店舗）が存在する場合 -->
-        {% if shops %}
-            <!-- グリッドレイアウトでカードを複数列に並べる -->
-            <div class="row">
-                {% for shop in shops %}
-                    <!-- 中サイズで2列、大サイズで3列になる -->
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <!-- 店舗情報をカード形式で表示 -->
-                        <div class="card h-100 text-dark">
-                            
-                            <!-- 店舗の画像があれば表示 -->
-                            {% if shop.photo and shop.photo.pc %}
-                                <img src="{{ shop.photo.pc.l }}" class="card-img-top" alt="店舗画像">
-                            {% endif %}
+<!--  コンテンツ全体コンテナ -->
+<div class="container py-5">
+  
+  <!--  検索結果件数の表示 -->
+  <h2 class="mb-4 text-center">検索結果 {{ shops|length }} 件</h2>
 
-                            <div class="card-body">
-                                <!-- 店舗名（クリックすると詳細ページへ） -->
-                                <h5 class="card-title">
-                                    <a href="{{ url_for('detail', shop_id=shop.id) }}" class="text-decoration-none text-dark">
-                                        {{ shop.name }}
-                                    </a>
-                                </h5>
+    <!--  戻るボタン -->
+    <div class="text-center mb-4">
+        <a href="/" class="btn btn-outline-secondary">
+          <i class="bi bi-arrow-left"></i> 検索条件を変更する
+        </a>
+      </div>
 
-                                <!-- アクセス情報（最寄り駅など） -->
-                                <p class="card-text">{{ shop.access }}</p>
-                            </div>
+  <!--  レストランカードを並べるエリア -->
+  <div class="row g-4">
 
-                            <!-- 下部に公式ページリンクボタンを配置 -->
-                            <div class="card-footer bg-transparent border-0">
-                                <a href="{{ shop.urls.pc }}" target="_blank" class="btn btn-outline-primary w-100">
-                                    公式ページを見る
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
+    <!-- 🔁 店舗リストをループしてカードを生成 -->
+    {% for shop in shops %}
+    <div class="col-md-4">
+      <div class="card-restaurant">
+        <!-- 店舗画像（なければplacehold.jpでも代用できる） -->
+        <img src="{{ shop.photo.pc.l }}" class="restaurant-img" alt="{{ shop.name }}">
+        <div class="restaurant-body">
+          <!-- 店舗名 -->
+          <div class="restaurant-title">{{ shop.name }}</div>
 
-        <!-- 検索結果が1件もなかった場合 -->
-        {% else %}
-            <p class="text-center">該当する店舗が見つかりませんでした。</p>
-        {% endif %}
+          <!-- 店舗のエリア・ジャンル・予算情報 -->
+          <div class="restaurant-info">
+            <i class="bi bi-geo-alt"></i> {{ shop.small_area.name }}<br>
+            <i class="bi bi-egg-fried"></i> {{ shop.genre.name }}<br>
+            <i class="bi bi-cash-stack"></i> {{ shop.budget.name }}
+          </div>
 
-        <!-- 検索画面に戻るボタン -->
-        <div class="text-center mt-4">
-            <a href="/" class="btn btn-light">検索画面に戻る</a>
+          <!-- 詳細ページへのリンク -->
+          <a href="{{ shop.urls.pc }}" target="_blank" class="btn btn-detail">詳細を見る</a>
         </div>
+      </div>
     </div>
+    {% endfor %}
+    <!--  戻るボタン -->
+    <div class="text-center mb-4">
+        <a href="/" class="btn btn-outline-secondary">
+          <i class="bi bi-arrow-left"></i> 検索条件を変更する
+        </a>
+    </div>
+  </div>
+
+</div>
+
 </body>
 </html>
