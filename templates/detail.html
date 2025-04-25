@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <!-- タイトルに店舗名を表示 -->
+    <title>{{ shop.name }} の詳細</title>  
+</head>
+<body>
+    <!--  店舗名を大見出しとして表示 -->
+    <h1>{{ shop.name }}</h1>
+
+    <!--  住所情報 -->
+    <p><strong>住所:</strong> {{ shop.address }}</p>
+
+    <!--  営業時間（"open" キーに入ってる） -->
+    <p><strong>営業時間:</strong> {{ shop.open }}</p>
+
+    <!--  店舗画像が存在する場合のみ表示 -->
+    {% if shop.photo and shop.photo.pc %}
+        <img src="{{ shop.photo.pc.l }}" alt="店舗画像" width="300">
+    {% endif %}
+
+    <!--  公式ページへのリンク（新しいタブで開く） -->
+    <p><a href="{{ shop.urls.pc }}" target="_blank">公式ページを見る</a></p>
+
+    <!--  電話番号がある場合、クリックで発信できるリンクを表示 -->
+    {% if shop.tel %}
+        <p><a href="tel:{{ shop.tel }}">電話をかける</a></p>
+    {% endif %}
+
+    <!--  検索画面に戻るリンク -->
+    <p><a href="/">← 検索画面に戻る</a></p>
+</body>
+</html>

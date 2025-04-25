@@ -55,6 +55,22 @@ def search():
     # templates/results.html に店舗リスト（shops）を渡して表示
     return render_template("results.html", shops=shops)
 
+@app.route('/detail/<shop_id>')
+def detail(shop_id):
+    # APIに店舗IDを指定して1件だけ取得
+    params = {
+        "key": API_KEY,
+        "id": shop_id,
+        "format": "json"
+    }
+    response = requests.get("https://webservice.recruit.co.jp/hotpepper/gourmet/v1/", params=params)
+    data = response.json()
+
+    # 店舗情報を取得（1件のみ）
+    shop = data["results"]["shop"][0] if "results" in data and "shop" in data["results"] else None
+
+    return render_template("detail.html", shop=shop)
+
 
 
 #  アプリを実行（このファイルが直接実行されたときのみ）
