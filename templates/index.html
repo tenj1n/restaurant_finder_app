@@ -14,6 +14,23 @@
 
             <!-- フォーム開始 -->
             <form action="/search" method="post">
+                <!-- 都道府県・地域エリア選択 -->
+                <div class="mb-3">
+                    <label class="form-label">エリア選択（任意）</label>
+                    <select name="large_area" class="form-select">
+                        <option value="">選択してください</option>
+                        <option value="Z011">北海道</option>
+                        <option value="Z041">東北</option>
+                        <option value="Z081">北陸・甲信越</option>
+                        <option value="Z071">東海</option>
+                        <option value="Z091">関東</option>
+                        <option value="Z131">関西</option>
+                        <option value="Z151">中国</option>
+                        <option value="Z161">四国</option>
+                        <option value="Z151">九州・沖縄</option>
+                    </select>
+                </div>
+
                 <!-- 緯度の入力 -->
                 <div class="mb-3">
                     <label class="form-label">緯度</label>
