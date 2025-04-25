@@ -1,124 +1,141 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>レストラン検索</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        /* 背景グラデーション */
-        body {
-            background: linear-gradient(to right, #654ea3, #eaafc8);
-            min-height: 100vh;
-        }
+  <meta charset="UTF-8" />
+  <title>レストラン検索</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background-color: #f6f8fa;
+    }
 
-        /* カードにアニメーション */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(30px);
-            animation: fadeInMove 1s forwards;
-        }
+    .card-style {
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      background-color: #ffffff;
+    }
 
-        @keyframes fadeInMove {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+    h1 {
+      font-weight: 700;
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      color: #212529;
+    }
 
-        /* 入力欄のカスタマイズ */
-        .form-control, .form-select {
-            border-radius: 0.5rem;
-            border: 2px solid #ced4da;
-        }
+    .form-label {
+      color: #495057;
+      font-weight: 600;
+    }
 
-        /* ラベルを少し濃く */
-        .form-label {
-            font-weight: bold;
-            color: #343a40;
-        }
-    </style>
+    .form-control,
+    .form-select {
+      border-radius: 0.5rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      border-color: #4dabf7;
+      box-shadow: 0 0 0 0.2rem rgba(77, 171, 247, 0.25);
+    }
+
+    .btn-gradient {
+      background: linear-gradient(to right, #4dabf7, #228be6);
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.75rem 2rem;
+      font-size: 1.1rem;
+      transition: background 0.3s ease;
+    }
+
+    .btn-gradient:hover {
+      background: linear-gradient(to right, #339af0, #1c7ed6);
+    }
+  </style>
 </head>
 
-<body class="text-white">
+<body>
+  <div class="container py-5">
+    <div class="card-style mx-auto" style="max-width: 720px;">
+      <h1>レストラン検索</h1>
+      <form action="/search" method="post">
+        <!-- 地方エリア・都道府県・市区 -->
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label class="form-label">地方エリア</label>
+            <select id="large_area" name="large_area" class="form-select">
+              <option value="">選択してください</option>
+              <option value="Z011">北海道</option>
+              <option value="Z021">東北</option>
+              <option value="Z041">甲信越</option>
+              <option value="Z051">北陸</option>
+              <option value="Z061">東海</option>
+              <option value="Z071">関西</option>
+              <option value="Z081">中国</option>
+              <option value="Z091">四国</option>
+              <option value="Z101">九州</option>
+              <option value="Z111">沖縄</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">都道府県</label>
+            <select id="pref_area" name="pref_area" class="form-select">
+              <option value="">選択してください</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">市区エリア</label>
+            <select id="middle_area" name="middle_area" class="form-select">
+              <option value="">選択してください</option>
+            </select>
+          </div>
+        </div>
 
-<div class="container mt-5">
-    <div class="card bg-light shadow-lg p-4 mx-auto fade-in" style="max-width: 700px;">
-        <h1 class="text-center mb-4 text-dark">レストラン検索</h1>
+        <!-- キーワード -->
+        <div class="mb-3">
+          <label class="form-label">キーワード</label>
+          <input type="text" name="keyword" class="form-control" placeholder="例: カフェ、ラーメン など">
+        </div>
 
-        <form action="/search" method="post">
+        <!-- 緯度・経度 -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">緯度</label>
+            <input type="text" name="lat" id="lat" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">経度</label>
+            <input type="text" name="lng" id="lng" class="form-control">
+          </div>
+        </div>
 
-            <!-- エリア選択 -->
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <label class="form-label">地方エリア</label>
-                    <select id="large_area" name="large_area" class="form-select">
-                        <option value="">選択してください</option>
-                        <option value="Z011">北海道</option>
-                        <option value="Z021">東北</option>
-                        <option value="Z041">甲信越</option>
-                        <option value="Z051">北陸</option>
-                        <option value="Z061">東海</option>
-                        <option value="Z071">関西</option>
-                        <option value="Z081">中国</option>
-                        <option value="Z091">四国</option>
-                        <option value="Z101">九州</option>
-                        <option value="Z111">沖縄</option>
-                    </select>
-                </div>
+        <!-- 検索半径 -->
+        <div class="mb-3">
+          <label class="form-label">検索半径</label>
+          <select name="range" class="form-select">
+            <option value="1">300m</option>
+            <option value="2">500m</option>
+            <option value="3">1000m</option>
+            <option value="4">2000m</option>
+            <option value="5">3000m</option>
+          </select>
+        </div>
 
-                <div class="col-md-4">
-                    <label class="form-label">都道府県</label>
-                    <select id="pref_area" name="pref_area" class="form-select">
-                        <option value="">選択してください</option>
-                    </select>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label">市区エリア</label>
-                    <select id="middle_area" name="middle_area" class="form-select">
-                        <option value="">選択してください</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- キーワード -->
-            <div class="mb-3">
-                <label class="form-label">キーワード</label>
-                <input type="text" name="keyword" class="form-control" placeholder="例: カフェ、ラーメン など">
-            </div>
-
-            <!-- 緯度・経度 -->
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label class="form-label">緯度</label>
-                    <input type="text" name="lat" id="lat" class="form-control">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">経度</label>
-                    <input type="text" name="lng" id="lng" class="form-control">
-                </div>
-            </div>
-
-            <!-- 検索範囲 -->
-            <div class="mb-3">
-                <label class="form-label">検索半径</label>
-                <select name="range" class="form-select">
-                    <option value="1">300m</option>
-                    <option value="2">500m</option>
-                    <option value="3">1000m</option>
-                    <option value="4">2000m</option>
-                    <option value="5">3000m</option>
-                </select>
-            </div>
-
-            <!-- 検索ボタン -->
-            <div class="text-center">
-                <button type="submit" class="btn btn-primary btn-lg px-5">検索する</button>
-            </div>
-
-        </form>
+        <!-- ボタン -->
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-gradient">検索する</button>
+        </div>
+      </form>
     </div>
-</div>
+  </div>
+</body>
+</html>
 
 <!-- スクリプト部分 -->
 <script>
