@@ -55,9 +55,9 @@
 </head>
 <body>
   <div class="container py-5">
-    <div class="card-style mx-auto" style="max-width: 720px;">
-      <h1>レストラン検索</h1>
-      <form action="/search" method="get">
+    <div class="card p-4 mx-auto shadow-sm" style="max-width: 720px;">
+      <h1 class="text-center mb-4">レストラン検索</h1>
+      <form action="/search" method="get" id="searchForm">
         <!-- 地方エリア・都道府県・市区 -->
         <div class="row mb-3">
           <div class="col-md-4">
@@ -109,7 +109,7 @@
         </div>
 
         <!-- 検索半径 -->
-        <div class="mb-3">
+        <div class="mb-4">
           <label class="form-label">検索半径</label>
           <select name="range" class="form-select">
             <option value="1">300m</option>
@@ -117,123 +117,155 @@
             <option value="3">1000m</option>
             <option value="4">2000m</option>
             <option value="5">3000m</option>
+            <option value="6">5000m</option>
           </select>
         </div>
 
         <!-- ボタン -->
-        <div class="d-flex justify-content-center">
-            <button type="submit" class="btn btn-danger btn-search">
-            <i class="bi bi-search"></i> 検索する
-            </button>
-            <button type="button" class="btn btn-secondary btn-search" onclick="resetForm();">リセット
-            </button>
+        <div class="text-center">
+          <button type="submit" class="btn btn-danger btn-search me-2"><i class="bi bi-search"></i> 検索する</button>
+          <button type="button" class="btn btn-secondary btn-search" onclick="resetForm();">リセット</button>
         </div>
       </form>
     </div>
   </div>
-</body>
-</html>
 
-<!-- スクリプト部分 -->
 <script>
-    // 全国対応エリアデータ
-    const areaData = {
-      "Z011": { "北海道": [{ label: "札幌駅周辺", value: "Y010" }, { label: "大通", value: "Y011" }] },
-      "Z021": { "宮城": [{ label: "仙台駅周辺", value: "Y050" }], "福島": [{ label: "郡山", value: "Y054" }] },
-      "Z041": { "新潟": [{ label: "新潟駅周辺", value: "Y060" }], "長野": [{ label: "長野駅周辺", value: "Y061" }] },
-      "Z051": { "石川": [{ label: "金沢", value: "Y070" }], "富山": [{ label: "富山駅周辺", value: "Y071" }] },
-      "Z061": { "愛知": [{ label: "名古屋駅周辺", value: "Y080" }], "静岡": [{ label: "静岡駅周辺", value: "Y081" }] },
-      "Z071": { "大阪": [{ label: "梅田", value: "Y980" }, { label: "なんば", value: "Y981" }], "京都": [{ label: "京都駅", value: "Y982" }], "兵庫": [{ label: "三宮", value: "Y983" }] },
-      "Z081": { "広島": [{ label: "八丁堀・紙屋町", value: "Y100" }], "岡山": [{ label: "岡山駅", value: "Y101" }] },
-      "Z091": { "香川": [{ label: "高松", value: "Y086" }], "愛媛": [{ label: "松山", value: "Y087" }] },
-      "Z101": { "福岡": [{ label: "天神", value: "Y083" }, { label: "博多", value: "Y084" }], "熊本": [{ label: "熊本市中心", value: "Y085" }] },
-      "Z111": { "沖縄": [{ label: "那覇", value: "Y120" }] }
-    };
-    
-    // セレクトやフォーム要素取得
-    const largeAreaSelect = document.getElementById("large_area");
-    const prefAreaSelect = document.getElementById("pref_area");
-    const middleAreaSelect = document.getElementById("middle_area");
-    const latInput = document.getElementById("lat");
-    const lngInput = document.getElementById("lng");
-    const form = document.querySelector("form");
-    
-    // 地方選択時 → 都道府県リスト更新
-    largeAreaSelect.addEventListener("change", function () {
-        const selected = this.value;
-        prefAreaSelect.innerHTML = '<option value="">選択してください</option>';
-        middleAreaSelect.innerHTML = '<option value="">選択してください</option>';
-        enableGeo(); // 緯度経度有効化
-    
-        if (areaData[selected]) {
-            Object.keys(areaData[selected]).forEach(pref => {
-                const option = document.createElement("option");
-                option.value = pref;
-                option.textContent = pref;
-                prefAreaSelect.appendChild(option);
-            });
+    window.addEventListener("DOMContentLoaded", function () {
+      console.log("位置情報の取得を開始します");
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function (pos) {
+            console.log("位置情報取得成功: ", pos.coords.latitude, pos.coords.longitude);
+            document.getElementById("lat").value = pos.coords.latitude;
+            document.getElementById("lng").value = pos.coords.longitude;
+          },
+          function (err) {
+            console.error("位置情報取得エラー: ", err.message);
+            alert("位置情報を取得できませんでした: " + err.message);
+          }
+        );
+      } else {
+        alert("このブラウザは位置情報に対応していません。");
+      }
+    });
+
+  const areaData = {
+    "Z011": { "北海道": [{ label: "札幌駅周辺", value: "Y010" }, { label: "大通", value: "Y011" }] },
+    "Z021": { "宮城": [{ label: "仙台駅周辺", value: "Y050" }], "福島": [{ label: "郡山", value: "Y054" }] },
+    "Z041": { "新潟": [{ label: "新潟駅周辺", value: "Y060" }], "長野": [{ label: "長野駅周辺", value: "Y061" }] },
+    "Z051": { "石川": [{ label: "金沢", value: "Y070" }], "富山": [{ label: "富山駅周辺", value: "Y071" }] },
+    "Z061": { "愛知": [{ label: "名古屋駅周辺", value: "Y080" }], "静岡": [{ label: "静岡駅周辺", value: "Y081" }] },
+    "Z071": { "大阪": [{ label: "梅田", value: "Y980" }, { label: "なんば", value: "Y981" }], "京都": [{ label: "京都駅", value: "Y982" }], "兵庫": [{ label: "三宮", value: "Y983" }] },
+    "Z081": { "広島": [{ label: "八丁堀・紙屋町", value: "Y100" }], "岡山": [{ label: "岡山駅", value: "Y101" }] },
+    "Z091": { "香川": [{ label: "高松", value: "Y086" }], "愛媛": [{ label: "松山", value: "Y087" }] },
+    "Z101": { "福岡": [{ label: "天神", value: "Y083" }, { label: "博多", value: "Y084" }], "熊本": [{ label: "熊本市中心", value: "Y085" }] },
+    "Z111": { "沖縄": [{ label: "那覇", value: "Y120" }] }
+  };
+
+  const largeAreaSelect = document.getElementById("large_area");
+  const prefAreaSelect = document.getElementById("pref_area");
+  const middleAreaSelect = document.getElementById("middle_area");
+  const latInput = document.getElementById("lat");
+  const lngInput = document.getElementById("lng");
+  const form = document.getElementById("searchForm");
+
+  // 現在地の取得
+  function getCurrentLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        function (position) {
+          latInput.value = position.coords.latitude;
+          lngInput.value = position.coords.longitude;
+        },
+        function (error) {
+          alert("位置情報の取得に失敗しました: " + error.message);
         }
-    });
-    
-    // 都道府県選択時 → 市区リスト更新
-    prefAreaSelect.addEventListener("change", function () {
-        const large = largeAreaSelect.value;
-        const pref = this.value;
-        middleAreaSelect.innerHTML = '<option value="">選択してください</option>';
-        enableGeo();
-    
-        if (areaData[large] && areaData[large][pref]) {
-            areaData[large][pref].forEach(area => {
-                const option = document.createElement("option");
-                option.value = area.value;
-                option.textContent = area.label;
-                middleAreaSelect.appendChild(option);
-            });
-        }
-    });
-    
-    // 市区選択時 → 緯度経度を無効化
-    middleAreaSelect.addEventListener("change", function () {
-        if (this.value) {
-            latInput.disabled = true;
-            lngInput.disabled = true;
-        } else {
-            enableGeo();
-        }
-    });
-    
-    // 現在地取得（必要に応じて）
-    navigator.geolocation.getCurrentPosition(function (position) {
-        document.getElementById("lat").value = position.coords.latitude;
-        document.getElementById("lng").value = position.coords.longitude;
-    });
-    
-    // フォーム送信前チェック
-    form.addEventListener("submit", function (e) {
-        if (!middleAreaSelect.value && (!latInput.value || !lngInput.value)) {
-            e.preventDefault(); // 送信中止
-            alert("市区エリアを選択するか、位置情報を有効にしてください。");
-        }
-    });
-    
-    // 緯度・経度の入力を有効に戻す
-    function enableGeo() {
-        latInput.disabled = false;
-        lngInput.disabled = false;
+      );
+    } else {
+      alert("このブラウザは位置情報に対応していません");
     }
-    // リセットボタン用の関数
-    function resetForm() {
-        // フォームをリセット
-        document.querySelector('form').reset();
-        // セレクトボックスも初期化
-        document.getElementById("pref_area").innerHTML = '<option value="">選択してください</option>';
-        document.getElementById("middle_area").innerHTML = '<option value="">選択してください</option>';
-        // 緯度・経度も再取得して入力する
-        navigator.geolocation.getCurrentPosition(function (position) {
-            document.getElementById("lat").value = position.coords.latitude;
-            document.getElementById("lng").value = position.coords.longitude;
-        });
+  }
+
+  // 初期表示で現在地を取得
+  window.addEventListener("DOMContentLoaded", () => {
+    enableGeo();
+    getCurrentLocation();
+  });
+
+  // 地方→都道府県
+  largeAreaSelect.addEventListener("change", () => {
+    prefAreaSelect.innerHTML = '<option value="">選択してください</option>';
+    middleAreaSelect.innerHTML = '<option value="">選択してください</option>';
+    enableGeo();
+
+    const selected = largeAreaSelect.value;
+    if (areaData[selected]) {
+      Object.keys(areaData[selected]).forEach(pref => {
+        const option = document.createElement("option");
+        option.value = pref;
+        option.textContent = pref;
+        prefAreaSelect.appendChild(option);
+      });
     }
+
+  });
+
+  // 都道府県→市区
+  prefAreaSelect.addEventListener("change", () => {
+    middleAreaSelect.innerHTML = '<option value="">選択してください</option>';
+    enableGeo();
+
+    const large = largeAreaSelect.value;
+    const pref = prefAreaSelect.value;
+    if (areaData[large] && areaData[large][pref]) {
+      areaData[large][pref].forEach(area => {
+        const option = document.createElement("option");
+        option.value = area.value;
+        option.textContent = area.label;
+        middleAreaSelect.appendChild(option);
+      });
+    }
+  });
+
+  // 市区が選ばれたら緯度経度を無効化
+  middleAreaSelect.addEventListener("change", () => {
+  const selected = middleAreaSelect.value;
+
+  if (selected && areaCoords[selected]) {
+    latInput.value = areaCoords[selected].lat;
+    lngInput.value = areaCoords[selected].lng;
+    latInput.disabled = true;
+    lngInput.disabled = true;
+  } else {
+    latInput.disabled = false;
+    lngInput.disabled = false;
+  }
+});
+
+
+  function enableGeo() {
+    latInput.disabled = false;
+    lngInput.disabled = false;
+  }
+
+  // バリデーション
+  form.addEventListener("submit", e => {
+    if (!middleAreaSelect.value && (!latInput.value || !lngInput.value)) {
+      e.preventDefault();
+      alert("市区エリアを選択するか、位置情報を取得してください。");
+    }
+  });
+
+  // リセットボタン
+  function resetForm() {
+    form.reset();
+    prefAreaSelect.innerHTML = '<option value="">選択してください</option>';
+    middleAreaSelect.innerHTML = '<option value="">選択してください</option>';
+    enableGeo();
+    getCurrentLocation();
+  }
 </script>
 </body>
 </html>

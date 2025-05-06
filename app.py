@@ -17,19 +17,18 @@ def index():
     # クエリパラメータをparamsとしてテンプレートに渡す
     return render_template('index.html', params=request.args)
 
-# 検索結果ページ
 @app.route('/search', methods=['GET'])
 def search():
-    # フォームの入力値（GETパラメータ）を取得
+    # フォームからの検索条件を取得
     lat = request.args.get("lat")
     lng = request.args.get("lng")
     range_km = request.args.get("range")
     keyword = request.args.get("keyword", "")
     large_area = request.args.get("large_area")
-    pref_area = request.args.get("pref_area")
+    pref_area = request.args.get("pref_area")  # 使わないけど取得だけしておく
     middle_area = request.args.get("middle_area")
 
-    # APIに渡すパラメータを準備
+    # ホットペッパーAPIに渡す基本パラメータ
     params = {
         "key": API_KEY,
         "format": "json",
@@ -37,26 +36,27 @@ def search():
         "keyword": keyword
     }
 
-    # 入力条件に応じてエリア情報を設定
+    #  地域検索の優先順位（middle_area > large_area > 緯度経度）
     if middle_area:
         params["middle_area"] = middle_area
     elif large_area:
         params["large_area"] = large_area
-    elif lat and lng:
+    elif lat and lng and lat.lower() != "none" and lng.lower() != "none":
+        # 緯度経度による検索（位置情報が有効な場合）
         params["lat"] = lat
         params["lng"] = lng
         params["range"] = range_km
 
-    # ホットペッパーAPIにGETリクエストを送信
+    #  APIリクエスト送信
     response = requests.get("https://webservice.recruit.co.jp/hotpepper/gourmet/v1/", params=params)
     data = response.json()
 
-    # 結果から店舗情報リストを取得（なければ空リスト）
+    #  店舗リストを取得（なければ空リスト）
     shops = data["results"].get("shop", [])
 
-    # 結果と元の検索条件をテンプレートに渡す
+    #  結果と検索条件をテンプレートへ渡して表示
     return render_template("results.html", shops=shops, search_params=request.args)
 
 # サーバー起動
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
